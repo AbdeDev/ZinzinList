@@ -1,21 +1,17 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { User } from "@/types/useUsers";
 
-type User = {
-  name: { first: string; last: string };
-  email: string;
-  phone: string;
-  location: { city: string; country: string };
-  picture: { large: string };
-};
-
-const fetchUsers = async (): Promise<User[]> => {
-  const response = await fetch("https://randomuser.me/api/?results=10");
+// Fonction pour récupérer des utilisateurs
+const fetchUsers = async ({ pageParam = 1 }): Promise<User[]> => {
+  const response = await fetch(`https://randomuser.me/api/?results=10&page=${pageParam}`);
+  if (!response.ok) throw new Error("Problème lors du chargement des utilisateurs");
   const data = await response.json();
   return data.results;
 };
@@ -24,21 +20,31 @@ const UserList = () => {
   const [search, setSearch] = useState("");
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
-  // Utilisation de TanStack Query pour la gesition des users
-  const { data: users, isLoading, refetch } = useQuery({
+  const {
+    data,
+    isLoading,
+    isFetchingNextPage,
+    fetchNextPage,
+    hasNextPage,
+    refetch,
+    isError,
+    error,
+  } = useInfiniteQuery({
     queryKey: ["users"],
     queryFn: fetchUsers,
-    staleTime: 1000 * 60 * 5,
+    getNextPageParam: (_lastPage, pages) => pages.length + 1,
+    initialPageParam: 1,
   });
 
-  const filteredUsers = users
-    ? users.filter((user) =>
-        `${user.name.first} ${user.name.last}`.toLowerCase().includes(search.toLowerCase())
-      )
-    : [];
+  const users = data?.pages.flat() ?? [];
+
+  const filteredUsers = users.filter((user) =>
+    `${user.name.first} ${user.name.last}`.toLowerCase().includes(search.toLowerCase())
+  );
 
   return (
     <div className="p-6 max-w-4xl mx-auto">
+      {/* Barre de recherche */}
       <Input
         type="text"
         placeholder="Rechercher un utilisateur..."
@@ -46,6 +52,15 @@ const UserList = () => {
         onChange={(e) => setSearch(e.target.value)}
         className="mb-4 p-2 border rounded w-full"
       />
+
+      {/* Gestion des erreurs */}
+      {isError && (
+        <Alert variant="destructive" className="mb-4">
+          <AlertTitle>Erreur</AlertTitle>
+          <AlertDescription>{(error as Error).message}</AlertDescription>
+          <Button onClick={() => refetch()} className="mt-2">🔄 Réessayer</Button>
+        </Alert>
+      )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {isLoading
@@ -76,6 +91,7 @@ const UserList = () => {
                     </Card>
                   </DrawerTrigger>
 
+                  {/* Drawer (Panneau latéral) */}
                   <DrawerContent>
                     {selectedUser && (
                       <div className="p-6">
@@ -93,9 +109,15 @@ const UserList = () => {
               <p className="text-center text-gray-500 col-span-3">Aucun utilisateur trouvé.</p>
             )}
       </div>
+
+      {/* Boutons de contrôle */}
       <div className="flex justify-center gap-4 mt-6">
-        <Button onClick={() => refetch()} disabled={isLoading} variant="destructive">
-          {isLoading ? "Rafraîchissement..." : "🔄 Rafraîchir la liste"}
+        <Button onClick={() => refetch()} variant="destructive">
+          🔄 Rafraîchir la liste
+        </Button>
+
+        <Button onClick={() => fetchNextPage()} disabled={isFetchingNextPage || !hasNextPage}>
+          {isFetchingNextPage ? "Chargement..." : "➕ Charger plus"}
         </Button>
       </div>
     </div>
