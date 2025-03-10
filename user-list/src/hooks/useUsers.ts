@@ -1,5 +1,5 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { User } from "@/types/useUsers";
+import { User } from "@/types/user";
 
 async function fetchUsers({ pageParam = 1 }: { pageParam: number }) {
   const response = await fetch(

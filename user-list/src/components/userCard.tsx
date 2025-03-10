@@ -1,15 +1,31 @@
 import { memo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
-import { User } from "@/types/useUsers";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
+import { User } from "@/types/user";
 import { motion } from "framer-motion";
+import { Trash } from "lucide-react";
 
 type UserCardProps = {
   user: User;
   onSelectUser: (user: User) => void;
+  onDeleteUser: (userEmail: string) => void;
 };
 
-const UserCard = memo(({ user, onSelectUser }: UserCardProps) => {
+const UserCard = memo(({ user, onSelectUser, onDeleteUser }: UserCardProps) => {
+  const handleDelete = () => {
+    toast(
+      `Voulez-vous vraiment supprimer ${user.name.first} ${user.name.last} ?`,
+      {
+        action: {
+          label: "Confirmer",
+          onClick: () => onDeleteUser(user.email),
+        },
+      }
+    );
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.9 }}
@@ -34,6 +50,14 @@ const UserCard = memo(({ user, onSelectUser }: UserCardProps) => {
           </Card>
         </DrawerTrigger>
 
+        {/* Bouton de suppression */}
+        <div className="flex justify-center mt-2">
+          <Button onClick={handleDelete} variant="destructive" className="flex items-center gap-2">
+            <Trash className="w-4 h-4" /> Supprimer
+          </Button>
+        </div>
+
+        {/* Drawer (Panneau latéral) */}
         <DrawerContent>
           <div className="p-6 bg-white dark:bg-gray-800 dark:text-white">
             <h2 className="text-xl font-bold">{user.name.first} {user.name.last}</h2>
