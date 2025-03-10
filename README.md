@@ -1,4 +1,4 @@
-# Dashboard zinzin list - React + Tailwind + React Query
+# Zinzin list 
 
 Un **dashboard** permettant d'afficher une liste d'utilisateurs avec un **scroll infini**, **une recherche dynamique** et **la suppression des utilisateurs**.
 
@@ -15,7 +15,7 @@ Un **dashboard** permettant d'afficher une liste d'utilisateurs avec un **scroll
 
 ## 📦 **Technologies utilisées**
 
-- **React 18**
+- **React**
 - **Tailwind CSS + shadcn/ui**
 - **React Query (Tanstack Query)** (gestion des requêtes API)
 - **Framer Motion** (animations)
@@ -26,15 +26,22 @@ Un **dashboard** permettant d'afficher une liste d'utilisateurs avec un **scroll
 ## 🔧 **Installation et lancement**
 
 ### **1️⃣ Cloner le projet**
-```sh
+```sh 
 git clone https://github.com/AbdeDev/ZinzinList.git
 cd zinzin-list
-2️⃣ Installer les dépendances
+```
+
+### **2️⃣ Installer les dépendances**
+```sh 
 pnpm install
-3️⃣ Lancer le projet en mode développement
+```
+
+### **3️⃣ Lancer le projet en mode développement**
+```sh
 pnpm run dev ou pnpm dev
 Le projet sera disponible sur http://localhost:5173 (ou un autre port si déjà occupé).
-
+```
+```sh
 🔗 Structure du projet
 📂 src
  ┣ 📂 components
@@ -53,7 +60,8 @@ Le projet sera disponible sur http://localhost:5173 (ou un autre port si déjà 
  ┣ 📜 tsconfig.json      # Configuration TypeScript
  ┣ 📜 package.json       # Dépendances et scripts
  ┣ 📜 README.md          # Documentation
-
+```
+```sh
 🔄 Explication des fonctionnalités
 🎯 Scroll Infini
 Utilisation de react-intersection-observer
@@ -64,8 +72,10 @@ Mise à jour automatique sans rechargement
 ❌ Suppression d’un utilisateur
 Mise à jour immédiate du cache avec React Query
 Pas besoin de re-fetch, les données restent synchronisées
-
+```
+```sh
 🏆 Crédits
 Projet réalisé par @abdramane Diarra (AbdeDev). 🚀
+```
 
 
